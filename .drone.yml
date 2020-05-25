@@ -1,0 +1,26 @@
+kind: pipeline
+type: docker
+name: Pikachu Kernel CI
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  depth: 1
+
+steps:
+  - name: Download & Build
+    environment:
+      GITID:
+        from_secret: GITID
+      GITPWD:
+        from_secret: GITPWD
+    image: pikachuhan/pikachu-ci:latest
+    commands:
+      - cd /drone
+      - git clone https://github.com/rsyhan/Xinyu-Clang -b toolchain --depth=1 Xinyu-Clang-LLVM-Toolchain
+      - git clone https://$GITID:$GITPWD@github.com/rsyhan/OnePlus7Pro -b y --depth=1 kernel-source
+      - cd /drone/kernel-source
+      - bash build_ci.sh
+      - bash upload_ci.sh
